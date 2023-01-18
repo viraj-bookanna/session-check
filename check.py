@@ -18,10 +18,14 @@ def get_session_files():
                 yield [line.strip().split(': ')[1] for line in fdata.split('\n')]
 async def main():
     for session in get_session_files():
-        client = TelegramClient(StringSession(session[2]), API_ID, API_HASH)
-        await client.connect()
-        authorized = await client.is_user_authorized()
-        await client.disconnect()
+        try:
+            client = TelegramClient(StringSession(session[2]), API_ID, API_HASH)
+            await client.connect()
+            authorized = await client.is_user_authorized()
+            await client.disconnect()
+        except Exception as e:
+            print(repr(e))
+            authorized = False
         if authorized:
             shutil.copy('files/{}.txt'.format(session[0][1:]), 'active/{}.txt'.format(session[0][1:]))
             print('user is authorized')
